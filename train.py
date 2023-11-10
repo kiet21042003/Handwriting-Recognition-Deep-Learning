@@ -27,12 +27,7 @@ def train(args):
     global_step = 0
     
     for epoch in range(args.num_epochs):
-<<<<<<< HEAD
         total_steps = len(train_loader)
-=======
-        total_steps = len(configs['train_loader'])
-        print(total_steps)
->>>>>>> 69198ab502e646bf1cb51e9ad4206d6840cdeb32
         current_step = 0
         
         # Training
