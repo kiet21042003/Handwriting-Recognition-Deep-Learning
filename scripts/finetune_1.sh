@@ -1,0 +1,15 @@
+python main.py \
+    --task finetune_baseline_stn0_no_augment \
+    --root-dir '/mnt/disk1/nmduong/hust/intro2dl/data/new_train' \
+    --train-label '/mnt/disk1/nmduong/hust/intro2dl/data/train_list.txt' \
+    --test-label '/mnt/disk1/nmduong/hust/intro2dl/data/val_list.txt' \
+    --img-width 256 \
+    --img-height 64 \
+    --lr 3e-5 \
+    --decay-rate 0.9 \
+    --num-epochs 300 \
+    --lr-step-every 1000 \
+    --max-length 25 \
+    --batch-size 128 \
+    --log-every 20 \
+    --val-every 1000

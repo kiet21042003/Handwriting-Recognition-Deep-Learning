@@ -38,11 +38,11 @@ if __name__=='__main__':
         with torch.no_grad():
             preds, _ = model(image.to(device), text_for_pred, is_train=False)
         _, preds_index = preds.max(2)
-        pred_str = converter.decode(preds_index, length_for_pred)
-        print(pred_str)
-        
-        # pred_EOS = pred_str.find('[s]')
-        # pred_str = pred_str[:pred_EOS]
-        
+        pred_str = converter.decode(preds_index, length_for_pred)[0]
         # print(pred_str)
+        
+        pred_EOS = pred_str.find('[s]')
+        pred_str = pred_str[:pred_EOS]
+        
+        print(fn, pred_str)
         

@@ -1,5 +1,6 @@
-python3 infer.py \
+python infer.py \
     --task 'infer_1' \
-    --weights 'weights\best_0.0025156091433018446.pth' \
-    --img-width 200 \
-    --img-height 50 \
+    --weights './outputs/train_baseline_stn0/best_cer_0.05871312692761421.pth' \
+    --img-width 100 \
+    --img-height 32 \
+    --max-length 25 \
