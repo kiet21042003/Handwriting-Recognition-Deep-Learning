@@ -239,7 +239,8 @@ def initialize_for_baseline(args):
     
     if args.weights != '':
         print(f"[INFO] Load weights from {args.weights}")
-        model.load_state_dict(torch.load(args.weights, map_location=torch.device(device)))
+        model.load_state_dict(
+            torch.load(args.weights, map_location=torch.device(device))['model_state_dict'])
     
     criterion = nn.CrossEntropyLoss(ignore_index=0, reduction='mean')
     optimizer = optim.Adam(model.parameters(), lr=lr)
@@ -265,7 +266,8 @@ def initialize_for_baseline(args):
         'train_loader': train_loader,
         'test_loader': test_loader,
         'out_log': out_log,
-        'out_dir': out_dir
+        'out_dir': out_dir,
+        'batch_size': batch_size
     }    
     
 def initialize_for_infer(args):
