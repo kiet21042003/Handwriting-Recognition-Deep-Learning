@@ -9,7 +9,8 @@ from torch.optim.lr_scheduler import StepLR
 import numpy as np
 from tqdm import tqdm
 
-from data import HWDataset, transform
+from data.dataset import HWDataset
+from data.utils import get_val_transform, get_train_transform
 from data.utils import collate_fn
 from models.trba import TrBA
 
@@ -110,80 +111,81 @@ def calc_acc(preds_str, labels, batch_size):
     return val_acc
         
 
-def initialize(args):
-    device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-    print("="*25, f"Configuration", "="*25)
+# def initialize(args):
+#     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+#     print("="*25, f"Configuration", "="*25)
     
-    lr = args.lr
-    batch_size = args.batch_size
-    num_epochs = args.num_epochs
-    decay_rate = args.decay_rate
-    save_every = args.save_every
-    out_dir = os.path.join(args.out_dir, args.task)
-    root_dir = args.root_dir
+#     lr = args.lr
+#     batch_size = args.batch_size
+#     num_epochs = args.num_epochs
+#     decay_rate = args.decay_rate
+#     save_every = args.save_every
+#     out_dir = os.path.join(args.out_dir, args.task)
+#     root_dir = args.root_dir
     
-    print(f"[INFO] Device found: {device}")
-    print(f"[INFO] Num of training epochs: {num_epochs}")
-    print(f"[INFO] Batch size: {batch_size}")
-    print(f"[INFO] Learning rate: {lr}")
-    print(f"[INFO] Decaying rate: {decay_rate}")
-    print(f"[INFO] Learning rate step every {args.lr_step_every} steps")
-    print(f"[INFO] Save model every {save_every} epochs")
-    print(f"[INFO] Using TPS: {args.stn_on}")
-    print(f"[INFO] Max size {args.img_width} - Min size {args.img_height}")
-    print(f"[INFO] Root data dir {root_dir}")
-    print("="*65)
+#     print(f"[INFO] Device found: {device}")
+#     print(f"[INFO] Num of training epochs: {num_epochs}")
+#     print(f"[INFO] Batch size: {batch_size}")
+#     print(f"[INFO] Learning rate: {lr}")
+#     print(f"[INFO] Decaying rate: {decay_rate}")
+#     print(f"[INFO] Learning rate step every {args.lr_step_every} steps")
+#     print(f"[INFO] Save model every {save_every} epochs")
+#     print(f"[INFO] Using TPS: {args.stn_on}")
+#     print(f"[INFO] Max size {args.img_width} - Min size {args.img_height}")
+#     print(f"[INFO] Root data dir {root_dir}")
+#     print("="*65)
 
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
+#     if not os.path.exists(out_dir):
+#         os.makedirs(out_dir)
 
-    out_log = os.path.join(out_dir, "logging.txt")
-    write_train_log("Training Logging", out_log, 'w')
+#     out_log = os.path.join(out_dir, "logging.txt")
+#     write_train_log("Training Logging", out_log, 'w')
 
-    img_channel = args.img_channel
-    img_height = args.img_height
-    img_width = args.img_width
+#     img_channel = args.img_channel
+#     img_height = args.img_height
+#     img_width = args.img_width
 
-    converter = AttnLabelConverter()
-    model = TrBA(
-        img_channel=img_channel,
-        img_height=img_height,
-        img_width=img_width,
-        num_class=converter.num_classes,
-        max_len=args.max_length,
-        stn_on=args.stn_on
-    ).to(device)
+#     converter = AttnLabelConverter()
+#     model = TrBA(
+#         img_channel=img_channel,
+#         img_height=img_height,
+#         img_width=img_width,
+#         num_class=converter.num_classes,
+#         max_len=args.max_length,
+#         stn_on=args.stn_on
+#     ).to(device)
     
-    if args.weights != '':
-        print(f"[INFO] Load weights from {args.weights}")
-        model.load_state_dict(torch.load(args.weights, map_location=torch.device(device)))
+#     if args.weights != '':
+#         print(f"[INFO] Load weights from {args.weights}")
+#         model.load_state_dict(torch.load(args.weights, map_location=torch.device(device)))
     
-    criterion = nn.CrossEntropyLoss(ignore_index=0, reduction='mean')
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-    scheduler = StepLR(optimizer, step_size=args.lr_step_every, gamma=decay_rate)
+#     criterion = nn.CrossEntropyLoss(ignore_index=0, reduction='mean')
+#     optimizer = optim.Adam(model.parameters(), lr=lr)
+#     scheduler = StepLR(optimizer, step_size=args.lr_step_every, gamma=decay_rate)
 
-    trainset = HWDataset(root_dir, min_size=img_width, max_size=img_height, mode='train', max_len=args.max_length)
-    testset = HWDataset(root_dir, min_size=img_width, max_size=img_height, mode='test', max_len=args.max_length)
+#     trainset = HWDataset(root_dir, min_size=img_width, max_size=img_height, mode='train', max_len=args.max_length)
+#     testset = HWDataset(root_dir, min_size=img_width, max_size=img_height, mode='test', max_len=args.max_length)
     
-    print(f"[INFO] Training data size: {len(trainset)}")
-    print(f"[INFO] Validation data size: {len(testset)}")
+#     print(f"[INFO] Training data size: {len(trainset)}")
+#     print(f"[INFO] Validation data size: {len(testset)}")
     
 
-    # DataLoader
-    train_loader = DataLoader(trainset, batch_size=batch_size, num_workers=4, shuffle=True)
-    test_loader = DataLoader(testset, batch_size=batch_size, num_workers=4, shuffle=False)
+#     # DataLoader
+#     train_loader = DataLoader(trainset, batch_size=batch_size, num_workers=4, shuffle=True)
+#     test_loader = DataLoader(testset, batch_size=batch_size, num_workers=4, shuffle=False)
     
-    return {
-        'converter': converter,
-        'model': model,
-        'criterion': criterion,
-        'scheduler': scheduler,
-        'optimizer': optimizer,
-        'train_loader': train_loader,
-        'test_loader': test_loader,
-        'out_log': out_log,
-        'out_dir': out_dir
-    }
+#     return {
+#         'converter': converter,
+#         'model': model,
+#         'criterion': criterion,
+#         'scheduler': scheduler,
+#         'optimizer': optimizer,
+#         'train_loader': train_loader,
+#         'test_loader': test_loader,
+#         'out_log': out_log,
+#         'out_dir': out_dir
+#     }
+    
     
 def initialize_for_baseline(args):
     device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -232,7 +234,8 @@ def initialize_for_baseline(args):
         stn_on=args.stn_on
     ).to(device)
     
-    transformer = transform(min_size=img_height, max_size=img_width)
+    # train_transform = get_train_transform(max_size=img_width, min_size=img_height)
+    # val_transform = get_val_transform(max_size=img_width, min_size=img_height)
     
     if args.weights != '':
         print(f"[INFO] Load weights from {args.weights}")
@@ -250,8 +253,8 @@ def initialize_for_baseline(args):
     
 
     # DataLoader
-    train_loader = DataLoader(trainset, batch_size=batch_size, collate_fn=collate_fn, num_workers=4, shuffle=True)
-    test_loader = DataLoader(testset, batch_size=batch_size, collate_fn=collate_fn, num_workers=4, shuffle=False)
+    train_loader = DataLoader(trainset, batch_size=batch_size, num_workers=4, shuffle=True)
+    test_loader = DataLoader(testset, batch_size=batch_size, num_workers=4, shuffle=False)
     
     return {
         'converter': converter,
@@ -280,12 +283,14 @@ def initialize_for_infer(args):
         max_len=args.max_length,
         stn_on=args.stn_on
     ).to(device)
- 
+
     if args.weights != '':
         print(f"[INFO] Load weights from {args.weights}")
         model.load_state_dict(torch.load(args.weights, map_location=torch.device(device))['model_state_dict'])   
     
     return {
         'converter': converter,
-        'model': model
+        'model': model,
+        'img_height': img_height,
+        'img_width': img_width
     }

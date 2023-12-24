@@ -4,25 +4,30 @@ import cv2
 import torchvision.transforms as tfs
 import numpy as np
 
-class Augmentation(object):
-    def __init__(self, max_size, min_size):
-        # assume H < W
-        self.general_augmenter = tfs.Compose([
-            tfs.RandomRotation(degrees=10, expand=True),
-            tfs.ColorJitter(brightness=0.5, contrast=1.0, saturation=1.0),
-            tfs.PILToTensor()
-        ])
-        self.max_size = max_size
-        self.min_size = min_size
-        
-    def forward(self, img):
-        return self.transform(img)
+def get_train_transform(max_size, min_size):
+     # assume H < W
+    general_augmenter = tfs.Compose([
+        tfs.Resize(size=(min_size, max_size)),
+        tfs.GaussianBlur(kernel_size=(3, 3), sigma=(0.1, 1.5)),
+        tfs.RandomAdjustSharpness(sharpness_factor=1.5, p=0.5),
+        tfs.ToTensor(),
+        tfs.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    ])
+    return general_augmenter
+
+def get_val_transform(max_size, min_size):
+    val_augmenter = tfs.Compose([
+        tfs.Resize(size=(min_size, max_size)),
+        tfs.ToTensor(),
+        tfs.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])        
+    ])
+    return val_augmenter
 
 def preprocess(image: torch.tensor, min_size, max_size):
     _, H, W = image.size()
     image = resize_image(image, min_size=min_size, max_size=max_size)
-    image = normalize_tensor_image(image)
     image = padding(image, min_size=min_size, max_size=max_size)
+    image = normalize_tensor_image(image)
     return image
 
 def collate_fn(data):

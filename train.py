@@ -28,7 +28,6 @@ def train_baseline(args):
     
     wandb.init(
         project='handwriting-ocr',
-        entity='aiotlab',
         name=args.task
     )
     

@@ -22,6 +22,7 @@ parser.add_argument("--max-length", help="Maximum length of predicted sequence",
 parser.add_argument("--lr-step-every", help="Step lr every n steps", type=int, default=100)
 parser.add_argument("--train-label", help="Path to training label")
 parser.add_argument("--test-label", help="Path to testing label")
+parser.add_argument("--wandb", help="Wandb activate", action='store_true')
 
 # Model
 parser.add_argument("--stn-on", help="Using TPS as transformation or not", action="store_true")
