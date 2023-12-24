@@ -50,6 +50,11 @@ CUDA_VISIBLE_DEVICES=0 python infer.py \
     --img-height 32 \
     --max-length 25 \
 ```
+or this for fast demo:
+```bash
+bash download.sh
+CUDA_VISIBLE_DEVICES=0 bash scripts/infer/infer_1.sh
+```
 - For visual demonstration, refer to this [notebook](./demo.ipynb)
 
 ![Output](assets/output.png)
