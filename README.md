@@ -9,7 +9,7 @@ This repository is our work for project of course IT3320E - Introduction to Deep
 ## How to train
 In order to train Res-Bi-Attn via our pipeline, setup configuration on the bash file [here](./scripts/). The `train` and `infer` folders are which can be used for training and inference. Another folder named `train_wandb` is for our training using our own key, which is unavailable publicly. However, it simply add wandb key into the `train.py` python script. For quick test, run:
 ```bash
-python main.py \
+CUDA_VISIBLE_DEVICES=0 python main.py \
     --task checkpoints \
     --root-dir '' \ # image dir
     --train-label '' \  # train label txt file
@@ -39,7 +39,7 @@ data
 ## For inference
 - The infererence script can be found from [here](./infer.py)
 ```bash
-python infer.py \
+CUDA_VISIBLE_DEVICES=0 python infer.py \
     --task 'infer_1' \
     --weights '' \  # weight path 
     --img-width 100 \
