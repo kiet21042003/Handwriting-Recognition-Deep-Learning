@@ -9,7 +9,21 @@ This repository is our work for project of course IT3320E - Introduction to Deep
 ## How to train
 In order to train Res-Bi-Attn via our pipeline, setup configuration on the bash file [here](./scripts/). The `train` and `infer` folders are which can be used for training and inference. Another folder named `train_wandb` is for our training using our own key, which is unavailable publicly. However, it simply add wandb key into the `train.py` python script. For quick test, run:
 ```bash
-CUDA_VISIBLE_DEVICES=0 bash scripts/train/baseline_1.sh
+python main.py \
+    --task checkpoints \
+    --root-dir '' \ # image dir
+    --train-label '' \  # train label txt file
+    --test-label '' \   # test label txt file
+    --img-width 100 \
+    --img-height 32 \
+    --lr 3e-4 \
+    --decay-rate 0.9 \
+    --num-epochs 500 \
+    --lr-step-every 1000 \
+    --max-length 25 \
+    --batch-size 128 \
+    --log-every 20 \
+    --val-every 1000 \
 ```
 - The output of training will be stored in [here](./outputs/), in `args.task` folder (adjust this in configuration file bash)
 - Training dataset shoule be in the following format:
@@ -25,7 +39,12 @@ data
 ## For inference
 - The infererence script can be found from [here](./infer.py)
 ```bash
-CUDA_VISIBLE_DEVICES=0 bash scripts/infer/infer_1.sh
+python infer.py \
+    --task 'infer_1' \
+    --weights '' \  # weight path 
+    --img-width 100 \
+    --img-height 32 \
+    --max-length 25 \
 ```
 - For visual demonstration, refer to this [notebook](./demo.ipynb)
 
@@ -33,6 +52,24 @@ CUDA_VISIBLE_DEVICES=0 bash scripts/infer/infer_1.sh
 
 ## Evaluation
 - For evaluation, we use Character Error Rate (CER) for metrics, which is conventional metric in text recognition text generally. The CER for our best model currently is 0.58, which is a significant performance for the baseline mode.
+```bash
+CUDA_VISIBLE_DEVICES=0 python test.py \
+    --task validation \
+    --root-dir '' \ # image dir
+    --train-label '' \  # train label txt file
+    --test-label '' \   # test label txt file
+    --img-width 100 \
+    --img-height 32 \
+    --lr 3e-4 \
+    --decay-rate 0.9 \
+    --num-epochs 500 \
+    --lr-step-every 1000 \
+    --max-length 25 \
+    --batch-size 128 \
+    --log-every 20 \
+    --val-every 1000 \
+    --weight '' # weight path
+```
 
 
 
