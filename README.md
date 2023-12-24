@@ -37,6 +37,10 @@ data
 ```
 
 ## For inference
+Trained weight is downloaded as follows:
+```bash
+bash download.sh
+```
 - The infererence script can be found from [here](./infer.py)
 ```bash
 CUDA_VISIBLE_DEVICES=0 python infer.py \
